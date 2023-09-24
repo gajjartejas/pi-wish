@@ -7,9 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint ./",
     "start": "nodemon --ext js,ts,json,env --exec 'node --experimental-specifier-resolution=node --loader ts-node/esm' index.ts",
-    "build": "npx tsc -p .",
-    "start-prod-log": "pm2 stop pi-wish && npm run build && pm2 start --name pi-wish dist/index.js && pm2 log",
-    "start-prod": "pm2 stop pi-wish && npm run build && pm2 start --name pi-wish dist/index.js"
+    "build": "npx tsc -p ."
   },
   "repository": {
     "type": "git",

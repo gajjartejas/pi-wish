@@ -8,11 +8,20 @@ import { postBirthdayWish } from './postWish';
 import { getBirthdayData } from './getBirthdayData';
 import { notifyOnTelegramMe } from './sendNotifications';
 import { getRandomWish } from './getRandomWish';
-import { API_JSON_SERVER, CHAT_ID, FB_ID, FB_PASS, FB_PROFILE_URL, TELEGRAM_API_TOKEN } from './constants';
+import {
+  API_JSON_SERVER,
+  CHAT_ID,
+  DRY_RUN,
+  FB_ID,
+  FB_PASS,
+  FB_PROFILE_URL,
+  TELEGRAM_API_TOKEN,
+  HEADLESS,
+} from './constants';
 
 async function main() {
   const browser = await pup.launch({
-    headless: false,
+    headless: HEADLESS,
     args: ['--no-sandbox', '--disable-notifications', '--enable-gpu'],
     userDataDir: './tmp',
     executablePath: process.platform === 'linux' ? '/usr/bin/chromium-browser' : undefined,
@@ -125,7 +134,7 @@ async function main() {
     for (let i = 0; i < newUsers.length; i++) {
       let pendingUser = newUsers[i];
       const wishText = getRandomWish();
-      const wishStatus = await postBirthdayWish(page, pendingUser.id, wishText);
+      const wishStatus = await postBirthdayWish(page, pendingUser.id, wishText, DRY_RUN);
       if (wishStatus === true) {
         pendingUser.wished = true;
         notifyOnTelegramMe(
@@ -153,9 +162,11 @@ async function main() {
     }
 
     await browser.close();
+    process.exit();
   } catch (e: any) {
     console.log('main->error:', e);
     await browser.close();
+    process.exit();
   }
 }
 
