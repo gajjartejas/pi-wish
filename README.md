@@ -4,6 +4,7 @@
 
 - **pm2**: Advanced process manager for production Node.js applications
 - **node**: Tested on version 16.20.0
+- **chromium-browser**: to install check [this link](https://stackoverflow.com/a/65497048/1644194)
 - **Telegram account**: For Bot and chat ID - Optional
 
 ## Installation
