@@ -41,6 +41,7 @@ async function main() {
     console.log('Logging into fB');
     const loginStatus = await login(page, FB_ID!, FB_PASS!);
     if (loginStatus !== true) {
+      console.log('Facebook login error:', loginStatus);
       notifyOnTelegramMe(TELEGRAM_API_TOKEN!, CHAT_ID!, 'Login Error! ❌');
       return;
     }
@@ -51,14 +52,14 @@ async function main() {
       },
     });
     const userData = response.data as IUserData;
-    console.log('users', userData);
+    console.log('users:', userData);
 
     //Check for listFetchComplete && wished all -> RETURN
     const users = userData.users;
     const listFetchComplete = userData.listFetchComplete;
 
     if (users !== undefined && listFetchComplete !== undefined) {
-      const isWishedToAll = users.filter(v => !v.wished).length === 0;
+      const isWishedToAll = users.filter(v => v.wished === false).length === 0;
       if (listFetchComplete && isWishedToAll) {
         console.log('ListFetchComplete && Wished all!');
         return;
@@ -67,6 +68,7 @@ async function main() {
       //Check for listFetchComplete && !wished all
       let pendingUsers = users.filter(v => !v.wished);
       if (listFetchComplete && !isWishedToAll) {
+        console.log('ListFetchComplete && but not wished all yet.');
         for (let i = 0; i < pendingUsers.length; i++) {
           let pendingUser = pendingUsers[i];
           const wishText = getRandomWish();
@@ -75,7 +77,7 @@ async function main() {
             pendingUser.wished = true;
             await axios.put(
               `${API_JSON_SERVER}configs/${todayDate}/`,
-              { ...userData, users: [...users, { ...pendingUser }] },
+              { users: users },
               {
                 method: 'PUT',
                 headers: {
@@ -144,7 +146,7 @@ async function main() {
         );
         await axios.put(
           `${API_JSON_SERVER}configs/${todayDate}/`,
-          { ...userData, users: newUsers },
+          { users: newUsers },
           {
             method: 'PUT',
             headers: {
