@@ -66,7 +66,7 @@
    First time it will try to collect fiend birthdays and try to wish each one by one if fails, it will try again when cron job runs.
 
    ```sh
-   pm2 start --cron-restart '0 11,17,20 * * *' --name pi-wish dist/index.js
+   pm2 start --cron-restart '0 11,17,20 * * *' --no-autorestart --name pi-wish dist/index.js
    ```
 
    after you can check status using `pm2 list` as it will show process status below

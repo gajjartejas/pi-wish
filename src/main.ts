@@ -52,7 +52,7 @@ async function main() {
       },
     });
     const userData = response.data as IUserData;
-    console.log('users:', userData);
+    console.log('response:', response);
 
     //Check for listFetchComplete && wished all -> RETURN
     const users = userData.users;
@@ -62,7 +62,7 @@ async function main() {
       const isWishedToAll = users.filter(v => v.wished === false).length === 0;
       if (listFetchComplete && isWishedToAll) {
         console.log('ListFetchComplete && Wished all!');
-        return;
+        process.exit(0);
       }
 
       //Check for listFetchComplete && !wished all
@@ -98,7 +98,7 @@ async function main() {
             );
           }
         }
-        return;
+        process.exit(0);
       }
     }
 
@@ -148,7 +148,7 @@ async function main() {
           `${API_JSON_SERVER}configs/${todayDate}/`,
           { users: newUsers },
           {
-            method: 'PUT',
+            method: 'PATCH',
             headers: {
               'Content-Type': 'application/json',
             },
@@ -164,11 +164,11 @@ async function main() {
     }
 
     await browser.close();
-    process.exit();
+    process.exit(0);
   } catch (e: any) {
     console.log('main->error:', e);
     await browser.close();
-    process.exit();
+    process.exit(0);
   }
 }
 
