@@ -42,8 +42,8 @@ async function main() {
     const loginStatus = await login(page, FB_ID!, FB_PASS!);
     if (loginStatus !== true) {
       console.log('Facebook login error:', loginStatus);
-      notifyOnTelegramMe(TELEGRAM_API_TOKEN!, CHAT_ID!, 'Login Error! ❌');
-      return;
+      await notifyOnTelegramMe(TELEGRAM_API_TOKEN!, CHAT_ID!, 'Login Error! ❌');
+      process.exit(0);
     }
     const todayDate = moment().format('DD-MM-YYYY');
     const response = await axios.get(`${API_JSON_SERVER}configs/${todayDate}?_expand=users`, {
@@ -52,7 +52,7 @@ async function main() {
       },
     });
     const userData = response.data as IUserData;
-    console.log('response:', response);
+    console.log('response 1:', response);
 
     //Check for listFetchComplete && wished all -> RETURN
     const users = userData.users;
@@ -85,13 +85,13 @@ async function main() {
                 },
               },
             );
-            notifyOnTelegramMe(
+            await notifyOnTelegramMe(
               TELEGRAM_API_TOKEN!,
               CHAT_ID!,
               `Wished to <a href="${FB_PROFILE_URL}${pendingUser.id}">${pendingUser.name}</a> ✅`,
             );
           } else {
-            notifyOnTelegramMe(
+            await notifyOnTelegramMe(
               TELEGRAM_API_TOKEN!,
               CHAT_ID!,
               `Unable to wish to <a href="${FB_PROFILE_URL}${pendingUser.id}">${pendingUser.name}</a> with error:\n${wishStatus} ❌`,
@@ -116,7 +116,7 @@ async function main() {
       }`;
     });
 
-    notifyOnTelegramMe(
+    await notifyOnTelegramMe(
       TELEGRAM_API_TOKEN!,
       CHAT_ID!,
       `We have ${formattedBirthdayList?.length} user(s) with today birthday:\n${
@@ -139,7 +139,7 @@ async function main() {
       const wishStatus = await postBirthdayWish(page, pendingUser.id, wishText, DRY_RUN);
       if (wishStatus === true) {
         pendingUser.wished = true;
-        notifyOnTelegramMe(
+        await notifyOnTelegramMe(
           TELEGRAM_API_TOKEN!,
           CHAT_ID!,
           `Wished to <a href="${FB_PROFILE_URL}${pendingUser.id}">${pendingUser.name}</a> ✅`,
@@ -155,7 +155,7 @@ async function main() {
           },
         );
       } else {
-        notifyOnTelegramMe(
+        await notifyOnTelegramMe(
           TELEGRAM_API_TOKEN!,
           CHAT_ID!,
           `Unable to wish to <a href="${FB_PROFILE_URL}${pendingUser.id}">${pendingUser.name}</a> with error:\n${wishStatus} ❌`,
