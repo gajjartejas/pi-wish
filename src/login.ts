@@ -1,6 +1,6 @@
 import { Page } from 'puppeteer';
-import { clickWithNavigate } from './helper';
-import { FB_LOGIN_URL } from './constants';
+import { clickWithNavigate } from './helper.js';
+import { FB_LOGIN_URL } from './constants.js';
 
 export const login = async (page: Page, fbID: string, fbPass: string): Promise<boolean | string> => {
   try {

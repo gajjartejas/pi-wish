@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { API_TELEGRAM } from './constants';
+import { API_TELEGRAM } from './constants.js';
 
-export const notifyOnTelegramMe = async (token: string, chatId: string, message: string) => {
+export const notifyOnTelegramMe = async (token: string, chatId: string, message: string): Promise<void> => {
   const options = {
     method: 'POST',
     url: `${API_TELEGRAM}${token}/sendMessage`,

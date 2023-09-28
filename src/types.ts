@@ -9,3 +9,7 @@ export type User = {
   name: string;
   wished: boolean;
 };
+
+export type IDBData = {
+  [key: string]: IUserData;
+};

@@ -1,11 +1,11 @@
 import { Page } from 'puppeteer';
-import { User } from './types';
-import { getIdFromUrl } from './helper';
-import { FB_BIRTHDAY_URL } from './constants';
+import { User } from './types.js';
+import { getIdFromUrl } from './helper.js';
+import { FB_BIRTHDAY_URL } from './constants.js';
 
 export const getBirthdayData = async (page: Page): Promise<User[]> => {
   try {
-    let results: User[] = [];
+    const results: User[] = [];
     console.log(`parseRawBirthdayData 1 -> opening ${FB_BIRTHDAY_URL}`);
     await page.goto(FB_BIRTHDAY_URL);
     await new Promise(resolve => setTimeout(resolve, 5000));
@@ -41,16 +41,16 @@ export const getBirthdayData = async (page: Page): Promise<User[]> => {
       await itemCollection.click();
       console.log('parseRawBirthdayData 10 -> itemCollection clicking finished:', itemCollection);
 
-      let profileNameSelector = `${sectionQuery} > div:nth-child(6) > h1`;
+      const profileNameSelector = `${sectionQuery} > div:nth-child(6) > h1`;
 
       console.log('parseRawBirthdayData 11 -> waitForSelector:', profileNameSelector);
       await page.waitForSelector(profileNameSelector);
       console.log('parseRawBirthdayData 12 -> waitForSelector finished:', profileNameSelector);
 
-      let name = await page.$eval(profileNameSelector, v => v.textContent);
+      const name = await page.$eval(profileNameSelector, v => v.textContent);
       if (name) {
-        let pageURL = page.url();
-        let id = getIdFromUrl(pageURL);
+        const pageURL = page.url();
+        const id = getIdFromUrl(pageURL);
         console.log('url:', pageURL);
         console.log('name:', name);
         if (id !== null) {
