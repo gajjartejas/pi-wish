@@ -1,4 +1,4 @@
-export const getRandomWish = () => {
+export const getRandomWish = (): string => {
   const wishes = [
     'Happy Birthday ! 🎉',
     'Happy Birthday! Have a blast. 🥳',

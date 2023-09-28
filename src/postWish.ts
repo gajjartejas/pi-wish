@@ -1,6 +1,6 @@
 import { Page } from 'puppeteer';
-import { clickWithNavigate } from './helper';
-import { FB_PROFILE_URL } from './constants';
+import { clickWithNavigate } from './helper.js';
+import { FB_PROFILE_URL } from './constants.js';
 
 export const postBirthdayWish = async (
   page: Page,
@@ -11,27 +11,31 @@ export const postBirthdayWish = async (
   try {
     const url = `${FB_PROFILE_URL}${profileId}`;
 
-    console.log('postBirthdayWish -> opening:', url);
+    console.log('postBirthdayWish 1 -> opening:', url);
     await page.goto(url);
-    console.log('postBirthdayWish -> finished 1', url);
+    console.log('postBirthdayWish 2 -> finished 1', url);
 
-    console.log('postBirthdayWish -> navigateToPostScreen');
+    console.log('postBirthdayWish 3 -> navigateToPostScreen');
     const result = await navigateToPostScreen(page);
-    console.log('postBirthdayWish -> navigateToPostScreen Finished');
+    console.log('postBirthdayWish 4 -> navigateToPostScreen Finished');
     if (result !== true) {
       return result;
     }
 
-    const writeSomethingInputButton1 = '#screen-root > div > div:nth-child(2) > div:nth-child(4)';
-    console.log('postBirthdayWish -> waitForSelector:', writeSomethingInputButton1);
+    const writeSomethingInputButton1 =
+      '#screen-root > div > div:nth-child(2) > div:nth-child(4)';
+    console.log(
+      'postBirthdayWish 5 -> waitForSelector:',
+      writeSomethingInputButton1,
+    );
     await page.waitForSelector(writeSomethingInputButton1);
-    console.log('postBirthdayWish -> Finished 3');
+    console.log('postBirthdayWish 6 -> Finished 3');
 
     await page.click(writeSomethingInputButton1);
     await page.keyboard.type(wishText);
 
     if (dryRun) {
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      await new Promise((resolve) => setTimeout(resolve, 5000));
       return true;
     }
 
@@ -41,21 +45,24 @@ export const postBirthdayWish = async (
     }
     return true;
   } catch (error: any) {
-    console.log('postBirthdayWish ->error', error);
+    console.log('postBirthdayWish 7 -> error', error);
     return error.message;
   }
 };
 
-const submitGreetingAndNavigate = async (page: Page, index?: number): Promise<boolean | string> => {
+const submitGreetingAndNavigate = async (
+  page: Page,
+  index?: number,
+): Promise<boolean | string> => {
   let computedIndex = index !== undefined ? index : 11;
   try {
     const query = `#screen-root > div > div:nth-child(2) > div:nth-child(${computedIndex})`; //10 or 11
-    console.log('submitGreetingAndNavigate -> clicking:', query);
+    console.log('submitGreetingAndNavigate 1 -> clicking:', query);
     await clickWithNavigate(query, page, { x: 80, y: 20 });
-    console.log('submitGreetingAndNavigate -> finish:', query);
+    console.log('submitGreetingAndNavigate 2 -> finish:', query);
     return true;
   } catch (e: any) {
-    console.error('submitGreetingAndNavigate -> error:', e);
+    console.error('submitGreetingAndNavigate 3 -> error:', e);
     if (computedIndex >= 13) {
       return e.message;
     }
@@ -64,16 +71,19 @@ const submitGreetingAndNavigate = async (page: Page, index?: number): Promise<bo
   }
 };
 
-const navigateToPostScreen = async (page: Page, index?: number): Promise<boolean | string> => {
+const navigateToPostScreen = async (
+  page: Page,
+  index?: number,
+): Promise<boolean | string> => {
   let computedIndex = index !== undefined ? index : 10;
   try {
     const query = `#screen-root > div > div:nth-child(2) > div:nth-child(${computedIndex})`; //11 or 12
-    console.log('submitGreetingAndNavigate -> clicking:', query);
+    console.log('navigateToPostScreen 1 -> clicking:', query);
     await clickWithNavigate(query, page, { x: 60, y: 16 });
-    console.log('submitGreetingAndNavigate -> finish:', query);
+    console.log('navigateToPostScreen 2 -> finish:', query);
     return true;
   } catch (e: any) {
-    console.error('submitGreetingAndNavigate -> error:', e);
+    console.error('navigateToPostScreen 3 -> error:', e);
     if (computedIndex >= 12) {
       return e.message;
     }

@@ -1,56 +1,56 @@
 import { Page } from 'puppeteer';
-import { User } from './types';
-import { getIdFromUrl } from './helper';
-import { FB_BIRTHDAY_URL } from './constants';
+import { User } from './types.js';
+import { getIdFromUrl } from './helper.js';
+import { FB_BIRTHDAY_URL } from './constants.js';
 
 export const getBirthdayData = async (page: Page): Promise<User[]> => {
   try {
-    let results: User[] = [];
-    console.log(`parseRawBirthdayData -> opening ${FB_BIRTHDAY_URL}`);
+    const results: User[] = [];
+    console.log(`parseRawBirthdayData 1 -> opening ${FB_BIRTHDAY_URL}`);
     await page.goto(FB_BIRTHDAY_URL);
     await new Promise(resolve => setTimeout(resolve, 5000));
-    console.log('parseRawBirthdayData -> redirected birthday url:', page.url());
+    console.log('parseRawBirthdayData 2 -> redirected birthday url:', page.url());
 
     const sectionQuery = '#screen-root > div > div:nth-child(2) > div:nth-child(4)';
 
-    console.log('parseRawBirthdayData -> waitForSelector:', sectionQuery);
+    console.log('parseRawBirthdayData 3 -> waitForSelector:', sectionQuery);
     await page.waitForSelector(sectionQuery);
-    console.log('parseRawBirthdayData -> waitForSelector finished:', sectionQuery);
+    console.log('parseRawBirthdayData 4 -> waitForSelector finished:', sectionQuery);
 
     const sectionHTMLCollection = await page.$eval(sectionQuery, v => {
       return { element: v.children, length: v.children.length };
     });
     if (!sectionHTMLCollection) {
-      console.log('parseRawBirthdayData -> sectionHTMLCollection -> empty');
+      console.log('parseRawBirthdayData 5 -> sectionHTMLCollection -> empty');
       return results;
     }
 
     for (let i = 1; i < sectionHTMLCollection.length; i++) {
       const itemQuery = `${sectionQuery} > div:nth-child(${i + 1})`;
 
-      console.log('parseRawBirthdayData -> await querySelector:', itemQuery);
+      console.log('parseRawBirthdayData 6 -> await querySelector:', itemQuery);
       const itemCollection = await page.$(itemQuery);
-      console.log('parseRawBirthdayData -> await querySelector finished:', itemQuery);
+      console.log('parseRawBirthdayData 7 -> await querySelector finished:', itemQuery);
 
       if (itemCollection === null) {
-        console.log('parseRawBirthdayData -> itemCollection empty:', itemCollection);
+        console.log('parseRawBirthdayData 8 -> itemCollection empty:', itemCollection);
         continue;
       }
 
-      console.log('parseRawBirthdayData -> itemCollection clicking:', itemCollection);
+      console.log('parseRawBirthdayData 9 -> itemCollection clicking:', itemCollection);
       await itemCollection.click();
-      console.log('parseRawBirthdayData -> itemCollection clicking finished:', itemCollection);
+      console.log('parseRawBirthdayData 10 -> itemCollection clicking finished:', itemCollection);
 
-      let profileNameSelector = `${sectionQuery} > div:nth-child(6) > h1`;
+      const profileNameSelector = `${sectionQuery} > div:nth-child(6) > h1`;
 
-      console.log('parseRawBirthdayData -> waitForSelector:', profileNameSelector);
+      console.log('parseRawBirthdayData 11 -> waitForSelector:', profileNameSelector);
       await page.waitForSelector(profileNameSelector);
-      console.log('parseRawBirthdayData -> waitForSelector finished:', profileNameSelector);
+      console.log('parseRawBirthdayData 12 -> waitForSelector finished:', profileNameSelector);
 
-      let name = await page.$eval(profileNameSelector, v => v.textContent);
+      const name = await page.$eval(profileNameSelector, v => v.textContent);
       if (name) {
-        let pageURL = page.url();
-        let id = getIdFromUrl(pageURL);
+        const pageURL = page.url();
+        const id = getIdFromUrl(pageURL);
         console.log('url:', pageURL);
         console.log('name:', name);
         if (id !== null) {
@@ -60,7 +60,7 @@ export const getBirthdayData = async (page: Page): Promise<User[]> => {
             wished: false,
           });
         } else {
-          console.log('parseRawBirthdayData -> null id for name:', name);
+          console.log('parseRawBirthdayData 13 -> null id for name:', name);
         }
       }
       await page.goBack();

@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { API_TELEGRAM } from './constants';
+import { API_TELEGRAM } from './constants.js';
 
-export const notifyOnTelegramMe = (token: string, chatId: string, message: string) => {
+export const notifyOnTelegramMe = async (token: string, chatId: string, message: string): Promise<void> => {
   const options = {
     method: 'POST',
     url: `${API_TELEGRAM}${token}/sendMessage`,
@@ -16,10 +16,9 @@ export const notifyOnTelegramMe = (token: string, chatId: string, message: strin
     },
   };
 
-  axios
-    .request(options)
-    .then(() => {})
-    .catch(error => {
-      console.error(error);
-    });
+  try {
+    await axios.request(options);
+  } catch (error: any) {
+    console.log('notifyOnTelegramMe -> Error', error);
+  }
 };
