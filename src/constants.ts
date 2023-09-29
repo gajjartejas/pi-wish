@@ -5,7 +5,6 @@ export const HEADLESS = true;
 export const DRY_RUN = true;
 
 export const API_TELEGRAM = 'https://api.telegram.org/';
-export const API_JSON_SERVER = 'http://localhost:3000/';
 
 export const FB_PROFILE_URL = 'https://m.facebook.com/profile.php/?id=';
 export const FB_LOGIN_URL = 'https://m.facebook.com/login';
