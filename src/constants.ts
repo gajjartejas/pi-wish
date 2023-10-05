@@ -1,8 +1,12 @@
 import dotenv from 'dotenv';
 dotenv.config();
+import config from '../sample.config.json';
 
-export const HEADLESS = true;
-export const DRY_RUN = true;
+export const HEADLESS = config.headless;
+export const DRY_RUN = config.headless;
+
+export const FRIENDS_TO_EXCLUDE = config.excludeProfileIds;
+export const FRIENDS_TO_INCLUDE = config.includedProfileIds;
 
 export const API_TELEGRAM = 'https://api.telegram.org/';
 

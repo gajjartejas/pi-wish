@@ -8,6 +8,9 @@ export type User = {
   id: string;
   name: string;
   wished: boolean;
+  exclude?: boolean;
+  include?: boolean;
+  wishTime?: string;
 };
 
 export type IDBData = {
