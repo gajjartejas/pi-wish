@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
-import config from '../sample.config.json';
+import config from '../config.json' assert { type: 'json' };
 
 export const HEADLESS = config.headless;
 export const DRY_RUN = config.headless;

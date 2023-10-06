@@ -10,7 +10,7 @@
     "clean": "rimraf coverage dist tmp",
     "build": "tsc",
     "build:watch": "tsc -w",
-    "dev": "npm run build && concurrently \"npm run build:watch\" \"npm run serve\"",
+    "start": "npm run build && concurrently \"npm run build:watch\" \"npm run serve\"",
     "serve": "node dist/src/main.js",
     "serve:watch": "nodemon dist/src/main.js",
     "lint": "eslint ./",
