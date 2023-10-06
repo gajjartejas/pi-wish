@@ -45,7 +45,10 @@ const main = async (): Promise<void> => {
       return {
         ...v,
         exclude: FRIENDS_TO_EXCLUDE.includes(v.id),
-        include: FRIENDS_TO_INCLUDE && FRIENDS_TO_INCLUDE.length > 0 ? FRIENDS_TO_INCLUDE.includes(v.id) : true,
+        include:
+          FRIENDS_TO_INCLUDE && FRIENDS_TO_INCLUDE.length > 0
+            ? FRIENDS_TO_INCLUDE.includes(v.id)
+            : !FRIENDS_TO_EXCLUDE.includes(v.id),
       };
     });
     const listFetchComplete = userData.listFetchComplete;
@@ -72,13 +75,16 @@ const main = async (): Promise<void> => {
       return {
         ...v,
         exclude: FRIENDS_TO_EXCLUDE.includes(v.id),
-        include: FRIENDS_TO_INCLUDE && FRIENDS_TO_INCLUDE.length > 0 ? FRIENDS_TO_INCLUDE.includes(v.id) : true,
+        include:
+          FRIENDS_TO_INCLUDE && FRIENDS_TO_INCLUDE.length > 0
+            ? FRIENDS_TO_INCLUDE.includes(v.id)
+            : !FRIENDS_TO_EXCLUDE.includes(v.id),
       };
     });
     todayConfig.listFetchComplete = true;
     const formattedBirthdayList = todayConfig.users?.map(v => {
       return `${todayConfig.users!.indexOf(v) + 1} - <a href="${FB_PROFILE_URL}${v.id}">${v.name}</a> - ${
-        v.include && !v.exclude ? '⏳' : '❌'
+        v.include && !v.exclude ? '⏳' : '⏩'
       }`;
     });
 
