@@ -19,7 +19,8 @@
     "noImplicitThis": false,
     "strictNullChecks": false,
     "types": ["node", "jest"],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true
   },
   "include": ["src/**/*", "__tests__/**/*"]
 }

@@ -9,7 +9,17 @@ import { postBirthdayWish } from './postWish.js';
 import { getBirthdayData } from './getBirthdayData.js';
 import { notifyOnTelegramMe } from './sendNotifications.js';
 import { getRandomWish } from './getRandomWish.js';
-import { CHAT_ID, DRY_RUN, FB_ID, FB_PASS, FB_PROFILE_URL, HEADLESS, TELEGRAM_API_TOKEN } from './constants.js';
+import {
+  CHAT_ID,
+  DRY_RUN,
+  FB_ID,
+  FB_PASS,
+  FB_PROFILE_URL,
+  FRIENDS_TO_EXCLUDE,
+  FRIENDS_TO_INCLUDE,
+  HEADLESS,
+  TELEGRAM_API_TOKEN,
+} from './constants.js';
 import { createDirectories } from './helper.js';
 import puppeteer, { Browser, Page } from 'puppeteer';
 
@@ -31,9 +41,18 @@ const main = async (): Promise<void> => {
     console.log('saved db json:', userData);
 
     //Check for listFetchComplete && wished all -> RETURN
-    const users = userData.users;
+    const users = userData.users.map(v => {
+      return {
+        ...v,
+        exclude: FRIENDS_TO_EXCLUDE.includes(v.id),
+        include:
+          FRIENDS_TO_INCLUDE && FRIENDS_TO_INCLUDE.length > 0
+            ? FRIENDS_TO_INCLUDE.includes(v.id)
+            : !FRIENDS_TO_EXCLUDE.includes(v.id),
+      };
+    });
     const listFetchComplete = userData.listFetchComplete;
-    const isWishedToAll = users.filter(v => !v.wished).length === 0;
+    const isWishedToAll = users.filter(v => !v.wished && v.include && !v.exclude).length === 0;
 
     if (listFetchComplete && isWishedToAll) {
       console.log('ListFetchComplete && Wished all!');
@@ -52,18 +71,27 @@ const main = async (): Promise<void> => {
 
     //Get today's birthday and update user
     const newUsers = await getBirthdayData(page);
-    todayConfig.users = newUsers;
+    todayConfig.users = newUsers.map(v => {
+      return {
+        ...v,
+        exclude: FRIENDS_TO_EXCLUDE.includes(v.id),
+        include:
+          FRIENDS_TO_INCLUDE && FRIENDS_TO_INCLUDE.length > 0
+            ? FRIENDS_TO_INCLUDE.includes(v.id)
+            : !FRIENDS_TO_EXCLUDE.includes(v.id),
+      };
+    });
     todayConfig.listFetchComplete = true;
     const formattedBirthdayList = todayConfig.users?.map(v => {
       return `${todayConfig.users!.indexOf(v) + 1} - <a href="${FB_PROFILE_URL}${v.id}">${v.name}</a> - ${
-        v.wished ? '✅' : '⏳'
+        v.include && !v.exclude ? '⏳' : '⏩'
       }`;
     });
 
     await notifyOnTelegramMe(
       TELEGRAM_API_TOKEN!,
       CHAT_ID!,
-      `We have ${formattedBirthdayList?.length} user(s) with today birthday:\n${
+      `We have ${formattedBirthdayList?.length} user(s) with birthday today:\n${
         formattedBirthdayList && formattedBirthdayList?.length > 0
           ? formattedBirthdayList?.join('\n')
           : 'No Birthday today!'
@@ -73,7 +101,7 @@ const main = async (): Promise<void> => {
     db.data[todayDate] = todayConfig;
     await db.write();
 
-    await wishToUsers(newUsers, db, todayDate, page);
+    await wishToUsers(todayConfig.users, db, todayDate, page);
 
     await browser.close();
     process.exit(0);
@@ -92,10 +120,19 @@ const wishToUsers = async (users: User[], db: Low<IDBData>, todayDate: string, p
     if (pendingUser.wished) {
       continue;
     }
+    if (pendingUser.exclude || !pendingUser.include) {
+      await notifyOnTelegramMe(
+        TELEGRAM_API_TOKEN!,
+        CHAT_ID!,
+        `Skipped <a href="${FB_PROFILE_URL}${pendingUser.id}">${pendingUser.name}</a> ⏩`,
+      );
+      continue;
+    }
     const wishText = getRandomWish();
     const wishStatus = await postBirthdayWish(page, pendingUser.id, wishText, DRY_RUN);
     if (wishStatus === true) {
       db.data[todayDate].users[i].wished = true;
+      db.data[todayDate].users[i].wishTime = moment().toISOString();
       await db.write();
 
       await notifyOnTelegramMe(

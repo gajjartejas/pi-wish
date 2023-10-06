@@ -1,8 +1,15 @@
 import dotenv from 'dotenv';
+import fs from 'fs';
+
 dotenv.config();
 
-export const HEADLESS = true;
-export const DRY_RUN = true;
+const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'));
+
+export const HEADLESS = config.headless;
+export const DRY_RUN = config.headless;
+
+export const FRIENDS_TO_EXCLUDE = config.excludeProfileIds;
+export const FRIENDS_TO_INCLUDE = config.includedProfileIds;
 
 export const API_TELEGRAM = 'https://api.telegram.org/';
 

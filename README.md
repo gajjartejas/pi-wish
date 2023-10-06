@@ -45,20 +45,37 @@
    CHAT_ID=yourchatid
    ```
 
-   ⚠️ Before running, review the `src/constants.ts` file:
+6. Prepare the `config.json` file:
 
-   ```typescript
-   export const HEADLESS = true; // Set to false for debugging (displays browser)
-   export const DRY_RUN = true; // Set to false to enable clicking post button, true means it won't post to users timeline.
+   ```sh
+   cp sample.config.json config.json
    ```
 
-6. Build the project using below command, this will produce `dist` dir at project root folder.
+7. Edit the `config.json` file with the following information.
+
+   - `excludeProfileIds` - It will not wish to provided profile ids.
+   - `includedProfileIds` - It will only wish to provided profile ids.
+   - `headless` - Set to false for debugging (displays browser window)
+   - `dryRun` - Set `false` to enable clicking post button, true means it won't post to users timeline.
+
+   Note: Example Ids: `["4", "5"]`, use `id` field from url - `https://m.facebook.com/profile.php/?id=4`
+
+   ```json
+   {
+     "excludeProfileIds": [],
+     "includedProfileIds": [],
+     "headless": true,
+     "dryRun": false
+   }
+   ```
+
+8. Build the project using below command, this will produce `dist` dir at project root folder.
 
    ```sh
    npm run build
    ```
 
-7. Start `pi-wish` to run at 11:00, 17:00, and 20:00 every day. Adjust the schedule
+9. Start `pi-wish` to run at 11:00, 17:00, and 20:00 every day. Adjust the schedule
    using [this tool](https://www.freeformatter.com/cron-expression-generator-quartz.html):
    First time it will try to collect fiends birthdays and try to wish each one by one, if fails it will try again(17:00
    and 20:00) when cron job runs for remaining friends.
@@ -75,10 +92,13 @@
 
    you can stop process using `pm2 stop 0`.
 
-## Todo ##
+## Todo
 
 1. Code cleanup.
 2. Better error handling.
-3. Friend/Unfriend tracker.
-4. Send birthday message if not able to post on timeline.
-
+3. Random delay for wish.
+4. Send message if unable to write on timeline.
+5. Particular wish message for particular profile id.
+6. Particular wish message for particular profile id.
+7. Friend/Unfriend tracker.
+8. Send birthday message if not able to post on timeline.
