@@ -1,6 +1,9 @@
 import dotenv from 'dotenv';
+import fs from 'fs';
+
 dotenv.config();
-import config from '../config.json' assert { type: 'json' };
+
+const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'));
 
 export const HEADLESS = config.headless;
 export const DRY_RUN = config.headless;
