@@ -101,7 +101,7 @@ const main = async (): Promise<void> => {
     db.data[todayDate] = todayConfig;
     await db.write();
 
-    await wishToUsers(newUsers, db, todayDate, page);
+    await wishToUsers(todayConfig.users, db, todayDate, page);
 
     await browser.close();
     process.exit(0);
