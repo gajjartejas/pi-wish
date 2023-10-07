@@ -95,7 +95,7 @@ const main = async (): Promise<void> => {
         formattedBirthdayList && formattedBirthdayList?.length > 0
           ? formattedBirthdayList?.join('\n')
           : 'No Birthday today!'
-      }`,
+      }${DRY_RUN ? '\nDry Run: true' : ''}`,
     );
 
     db.data[todayDate] = todayConfig;

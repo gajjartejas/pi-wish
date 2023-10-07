@@ -6,7 +6,7 @@ dotenv.config();
 const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'));
 
 export const HEADLESS = config.headless;
-export const DRY_RUN = config.headless;
+export const DRY_RUN = config.dryRun;
 
 export const FRIENDS_TO_EXCLUDE = config.excludeProfileIds;
 export const FRIENDS_TO_INCLUDE = config.includedProfileIds;
