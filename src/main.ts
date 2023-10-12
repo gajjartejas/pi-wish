@@ -11,6 +11,7 @@ import { notifyOnTelegramMe } from './sendNotifications.js';
 import { getRandomWish } from './getRandomWish.js';
 import {
   CHAT_ID,
+  CUSTOM_BIRTHDAY_MESSAGES,
   DRY_RUN,
   FB_ID,
   FB_PASS,
@@ -18,9 +19,11 @@ import {
   FRIENDS_TO_EXCLUDE,
   FRIENDS_TO_INCLUDE,
   HEADLESS,
+  RANDOM_DELAY_FOR_WISH,
+  RANDOM_DELAY_RANGE_IN_SECONDS,
   TELEGRAM_API_TOKEN,
 } from './constants.js';
-import { createDirectories } from './helper.js';
+import { createDirectories, randomInteger, sleep } from './helper.js';
 import puppeteer, { Browser, Page } from 'puppeteer';
 
 const main = async (): Promise<void> => {
@@ -114,6 +117,13 @@ const main = async (): Promise<void> => {
   }
 };
 
+const awaitForRandomDelay = async (): Promise<void> => {
+  if (RANDOM_DELAY_FOR_WISH) {
+    const [min, max] = RANDOM_DELAY_RANGE_IN_SECONDS;
+    await sleep(randomInteger(min, max));
+  }
+};
+
 const wishToUsers = async (users: User[], db: Low<IDBData>, todayDate: string, page: Page): Promise<void> => {
   for (let i = 0; i < users.length; i++) {
     const pendingUser = users[i];
@@ -128,7 +138,15 @@ const wishToUsers = async (users: User[], db: Low<IDBData>, todayDate: string, p
       );
       continue;
     }
-    const wishText = getRandomWish();
+
+    //Random delay between wish
+    await awaitForRandomDelay();
+
+    const [customWish] = CUSTOM_BIRTHDAY_MESSAGES.filter(v => v.ids.includes(pendingUser.id));
+
+    //Try to get custom message if specified else use random message
+    const wishText = customWish ? customWish.message : getRandomWish();
+
     const wishStatus = await postBirthdayWish(page, pendingUser.id, wishText, DRY_RUN);
     if (wishStatus === true) {
       db.data[todayDate].users[i].wished = true;

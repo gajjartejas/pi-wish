@@ -1,15 +1,21 @@
 import dotenv from 'dotenv';
 import fs from 'fs';
+import { IAppConfig } from './types.js';
 
 dotenv.config();
 
-const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'));
+const config = JSON.parse(fs.readFileSync('config.json', 'utf-8')) as IAppConfig;
 
 export const HEADLESS = config.headless;
 export const DRY_RUN = config.dryRun;
 
 export const FRIENDS_TO_EXCLUDE = config.excludeProfileIds;
 export const FRIENDS_TO_INCLUDE = config.includedProfileIds;
+
+export const RANDOM_DELAY_FOR_WISH = config.randomDelayForWish;
+export const RANDOM_DELAY_RANGE_IN_SECONDS = config.randomDelayRangeInSeconds;
+
+export const CUSTOM_BIRTHDAY_MESSAGES = config.customBirthdayMessages;
 
 export const API_TELEGRAM = 'https://api.telegram.org/';
 

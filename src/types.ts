@@ -16,3 +16,18 @@ export type User = {
 export type IDBData = {
   [key: string]: IUserData;
 };
+
+export type IAppConfig = {
+  excludeProfileIds: string[];
+  includedProfileIds: string[];
+  headless: boolean;
+  dryRun: boolean;
+  randomDelayForWish: boolean;
+  randomDelayRangeInSeconds: number[];
+  customBirthdayMessages: IAppConfigCustomBirthdayMessage[];
+};
+
+export type IAppConfigCustomBirthdayMessage = {
+  message: string;
+  ids: string[];
+};

@@ -1,4 +1,11 @@
-# 🚧 Work In Progress 🚧
+# pi-wish - A Facebook birthday bot for Raspberry Pi
+
+## Features
+
+1. Particular wish message for particular profile id.
+2. Custom message for user.
+3. Custom/Random message for friend.
+4. Random Delay for each wish.
 
 ## Requirements
 
@@ -6,7 +13,7 @@
 - **pm2**: You can install using `npm install pm2@latest -g`, more detail found
   at [here](https://pm2.keymetrics.io/docs/usage/quick-start/)
 - **chromium-browser**: to install check [this link](https://stackoverflow.com/a/65497048/1644194)
-- **Telegram account (Optional)**: For notification, fpr Bot and chat ID
+- **Telegram account (Optional)**: For notification, Bot and chat ID
 
 ## Installation
 
@@ -57,6 +64,9 @@
    - `includedProfileIds` - It will only wish to provided profile ids.
    - `headless` - Set to false for debugging (displays browser window)
    - `dryRun` - Set `false` to enable clicking post button, true means it won't post to users timeline.
+   - `randomDelayForWish` - Adds random delay between wish.
+   - `randomDelayRangeInSeconds` - Range for `randomDelayForWish`, ex: `[0, 100]`
+   - `customBirthdayMessages` - Use specified message for wish.
 
    Note: Example Ids: `["4", "5"]`, use `id` field from url - `https://m.facebook.com/profile.php/?id=4`
 
@@ -65,7 +75,19 @@
      "excludeProfileIds": [],
      "includedProfileIds": [],
      "headless": true,
-     "dryRun": false
+     "dryRun": false,
+     "randomDelayForWish": false,
+     "randomDelayRangeInSeconds": [0, 100],
+     "customBirthdayMessages": [
+       {
+         "message": "Happy birthday!!!",
+         "ids": ["4", "5"]
+       },
+       {
+         "message": "Happy birthday!!!",
+         "ids": ["6"]
+       }
+     ]
    }
    ```
 
@@ -86,9 +108,9 @@
 
    after you can check status using `pm2 list` as it will show process status below
 
-   | id | name    | namespace | version | mode | pid   | uptime | ↺ | status | cpu | mem    | user  | watching |
-   |----|---------|-----------|---------|------|-------|--------|---|--------|-----|--------|-------|----------|
-   | 0  | pi-wish | default   | 1.0.0   | fork | 22697 | 0s     | 0 | online | 0%  | 19.9mb | tejas | disabled |
+   | id  | name    | namespace | version | mode | pid   | uptime | ↺   | status | cpu | mem    | user  | watching |
+   | --- | ------- | --------- | ------- | ---- | ----- | ------ | --- | ------ | --- | ------ | ----- | -------- |
+   | 0   | pi-wish | default   | 1.0.0   | fork | 22697 | 0s     | 0   | online | 0%  | 19.9mb | tejas | disabled |
 
    you can stop process using `pm2 stop 0`.
 
@@ -96,9 +118,6 @@
 
 1. Code cleanup.
 2. Better error handling.
-3. Random delay for wish.
-4. Send message if unable to write on timeline.
-5. Particular wish message for particular profile id.
-6. Particular wish message for particular profile id.
-7. Friend/Unfriend tracker.
-8. Send birthday message if not able to post on timeline.
+3. Friend/Unfriend tracker.
+4. Send birthday message if not able to post on timeline.
+5. On/off telegram message flag.
