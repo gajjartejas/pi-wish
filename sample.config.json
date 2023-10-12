@@ -2,5 +2,13 @@
   "excludeProfileIds": [],
   "includedProfileIds": [],
   "headless": true,
-  "dryRun": false
+  "dryRun": false,
+  "randomDelayForWish": false,
+  "randomDelayRangeInSeconds": [0, 100],
+  "customBirthdayMessages": [
+    {
+      "message": "Happy birthday!!!",
+      "ids": [""]
+    }
+  ]
 }
