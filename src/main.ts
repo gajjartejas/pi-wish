@@ -7,7 +7,6 @@ import { login } from './login.js';
 import { IDBData, IUserData, User } from './types.js';
 import { postBirthdayWish } from './postWish.js';
 import { getBirthdayData } from './getBirthdayData.js';
-import { notifyOnTelegramMe } from './sendNotifications.js';
 import { getRandomWish } from './getRandomWish.js';
 import {
   CHAT_ID,
@@ -22,9 +21,12 @@ import {
   RANDOM_DELAY_FOR_WISH,
   RANDOM_DELAY_RANGE_IN_SECONDS,
   TELEGRAM_API_TOKEN,
+  TELEGRAM_DEBUG_NOTIFICATIONS_ENABLED,
+  TELEGRAM_NOTIFICATIONS_ENABLED,
 } from './constants.js';
 import { createDirectories, randomInteger, sleep } from './helper.js';
 import puppeteer, { Browser, Page } from 'puppeteer';
+import { notifyOnTelegramMe } from './sendNotifications.js';
 
 const main = async (): Promise<void> => {
   let browser: Browser | null = null;
@@ -39,7 +41,11 @@ const main = async (): Promise<void> => {
       users: [],
     };
 
+    //Get database file
     const db = await initLocalDatabase('db.json');
+    if (db === null) {
+      process.exit(0);
+    }
     const userData = db.data[todayDate] || todayConfig;
     console.log('saved db json:', userData);
 
@@ -62,8 +68,19 @@ const main = async (): Promise<void> => {
       process.exit(0);
     }
 
-    [browser, page] = await launchBrowserAndPage();
-    await loginUser(page);
+    //Launch Browser
+    const launchBrowserResults = await launchBrowserAndPage();
+    if (launchBrowserResults === null) {
+      process.exit(0);
+      return;
+    }
+    [browser, page] = launchBrowserResults;
+
+    //Login user
+    const loginStatus = await loginUser(page);
+    if (loginStatus === false) {
+      process.exit(0);
+    }
 
     //Check for listFetchComplete && !wished all
     if (listFetchComplete && !isWishedToAll) {
@@ -91,7 +108,7 @@ const main = async (): Promise<void> => {
       }`;
     });
 
-    await notifyOnTelegramMe(
+    await notify(
       TELEGRAM_API_TOKEN!,
       CHAT_ID!,
       `We have ${formattedBirthdayList?.length} user(s) with birthday today:\n${
@@ -108,8 +125,15 @@ const main = async (): Promise<void> => {
 
     await browser.close();
     process.exit(0);
-  } catch (e: unknown) {
+  } catch (e: any) {
     console.log('main->error:', e);
+
+    if (TELEGRAM_DEBUG_NOTIFICATIONS_ENABLED) {
+      await notify(TELEGRAM_API_TOKEN!, CHAT_ID!, `DEBUG: Unexpected Error! ❌\nDEBUG: ${e.message}`);
+    } else {
+      await notify(TELEGRAM_API_TOKEN!, CHAT_ID!, 'Unexpected Error! ❌');
+    }
+
     if (browser !== null) {
       await browser.close();
     }
@@ -131,7 +155,7 @@ const wishToUsers = async (users: User[], db: Low<IDBData>, todayDate: string, p
       continue;
     }
     if (pendingUser.exclude || !pendingUser.include) {
-      await notifyOnTelegramMe(
+      await notify(
         TELEGRAM_API_TOKEN!,
         CHAT_ID!,
         `Skipped <a href="${FB_PROFILE_URL}${pendingUser.id}">${pendingUser.name}</a> ⏩`,
@@ -153,41 +177,57 @@ const wishToUsers = async (users: User[], db: Low<IDBData>, todayDate: string, p
       db.data[todayDate].users[i].wishTime = moment().toISOString();
       await db.write();
 
-      await notifyOnTelegramMe(
+      await notify(
         TELEGRAM_API_TOKEN!,
         CHAT_ID!,
         `Wished to <a href="${FB_PROFILE_URL}${pendingUser.id}">${pendingUser.name}</a> ✅`,
       );
     } else {
-      await notifyOnTelegramMe(
-        TELEGRAM_API_TOKEN!,
-        CHAT_ID!,
-        `Unable to wish to <a href="${FB_PROFILE_URL}${pendingUser.id}">${pendingUser.name}</a> with error:\n${wishStatus} ❌`,
-      );
+      if (TELEGRAM_DEBUG_NOTIFICATIONS_ENABLED) {
+        await notify(
+          TELEGRAM_API_TOKEN!,
+          CHAT_ID!,
+          `Unable to wish to <a href="${FB_PROFILE_URL}${pendingUser.id}">${pendingUser.name}</a> ❌\nDEBUG: ${wishStatus}`,
+        );
+      } else {
+        await notify(
+          TELEGRAM_API_TOKEN!,
+          CHAT_ID!,
+          `Unable to wish to <a href="${FB_PROFILE_URL}${pendingUser.id}">${pendingUser.name}</a> ❌`,
+        );
+      }
     }
   }
 };
 
-const launchBrowserAndPage = async (): Promise<[Browser, Page]> => {
-  const browser = await puppeteer.launch({
-    headless: HEADLESS,
-    args: ['--no-sandbox', '--disable-notifications', '--enable-gpu'],
-    userDataDir: './tmp',
-    executablePath: process.platform === 'linux' ? '/usr/bin/chromium-browser' : undefined,
-  });
+const launchBrowserAndPage = async (): Promise<[Browser, Page] | null> => {
+  try {
+    const browser = await puppeteer.launch({
+      headless: HEADLESS,
+      args: ['--no-sandbox', '--disable-notifications', '--enable-gpu'],
+      userDataDir: './tmp',
+      executablePath: process.platform === 'linux' ? '/usr/bin/chromium-browser' : undefined,
+    });
 
-  const page = await browser.newPage();
-  await page.emulate({
-    viewport: {
-      width: 375,
-      height: 667,
-      isMobile: true,
-    },
-    userAgent:
-      'Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1',
-  });
-
-  return [browser, page];
+    const page = await browser.newPage();
+    await page.emulate({
+      viewport: {
+        width: 375,
+        height: 667,
+        isMobile: true,
+      },
+      userAgent:
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1',
+    });
+    return [browser, page];
+  } catch (e: any) {
+    if (TELEGRAM_DEBUG_NOTIFICATIONS_ENABLED) {
+      await notify(TELEGRAM_API_TOKEN!, CHAT_ID!, `DEBUG: Launch browser error! ❌\nDEBUG: ${e.message}`);
+    } else {
+      await notify(TELEGRAM_API_TOKEN!, CHAT_ID!, 'Launch browser error! ❌');
+    }
+    return null;
+  }
 };
 
 const loginUser = async (page: Page): Promise<boolean> => {
@@ -195,25 +235,44 @@ const loginUser = async (page: Page): Promise<boolean> => {
   const loginStatus = await login(page, FB_ID!, FB_PASS!);
   if (loginStatus !== true) {
     console.log('Facebook login error:', loginStatus);
-    await notifyOnTelegramMe(TELEGRAM_API_TOKEN!, CHAT_ID!, 'Login Error! ❌');
-    process.exit(0);
+    if (TELEGRAM_DEBUG_NOTIFICATIONS_ENABLED) {
+      await notify(TELEGRAM_API_TOKEN!, CHAT_ID!, `DEBUG: Login Error! ❌\nDEBUG: ${loginStatus}`);
+    } else {
+      await notify(TELEGRAM_API_TOKEN!, CHAT_ID!, 'Login Error! ❌');
+    }
   }
-  return true;
+  return loginStatus === true;
 };
 
-const initLocalDatabase = async (dbName: string): Promise<Low<IDBData>> => {
-  // db.json file path
-  const __dirname = createDirectories();
-  const file = join(__dirname, dbName);
-  console.log('db file path:', file);
+const initLocalDatabase = async (dbName: string): Promise<Low<IDBData> | null> => {
+  try {
+    // db.json file path
+    const __dirname = createDirectories();
+    const file = join(__dirname, dbName);
+    console.log('db file path:', file);
 
-  // Configure lowdb to write data to JSON file
-  const adapter = new JSONFile<IDBData>(file);
-  const defaultData = {};
-  const db = new Low<IDBData>(adapter, defaultData);
-  await db.read();
-  await db.write();
-  return db;
+    // Configure lowdb to write data to JSON file
+    const adapter = new JSONFile<IDBData>(file);
+    const defaultData = {};
+    const db = new Low<IDBData>(adapter, defaultData);
+    await db.read();
+    await db.write();
+    return db;
+  } catch (e: any) {
+    if (TELEGRAM_DEBUG_NOTIFICATIONS_ENABLED) {
+      await notify(TELEGRAM_API_TOKEN!, CHAT_ID!, `DEBUG: DB init/rw error! ❌\nDEBUG: ${e.message}`);
+    } else {
+      await notify(TELEGRAM_API_TOKEN!, CHAT_ID!, 'DB init/rw error! ❌');
+    }
+    return null;
+  }
+};
+
+export const notify = async (token: string, chatId: string, message: string): Promise<void> => {
+  if (!TELEGRAM_NOTIFICATIONS_ENABLED) {
+    return;
+  }
+  await notifyOnTelegramMe(token, chatId, message);
 };
 
 main().then();

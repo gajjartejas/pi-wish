@@ -25,6 +25,8 @@ export type IAppConfig = {
   randomDelayForWish: boolean;
   randomDelayRangeInSeconds: number[];
   customBirthdayMessages: IAppConfigCustomBirthdayMessage[];
+  telegramNotificationsEnabled: boolean;
+  telegramDebugNotificationsEnabled: boolean;
 };
 
 export type IAppConfigCustomBirthdayMessage = {
