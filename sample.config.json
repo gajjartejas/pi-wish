@@ -10,5 +10,7 @@
       "message": "Happy birthday!!!",
       "ids": [""]
     }
-  ]
+  ],
+  "telegramNotificationsEnabled": true,
+  "telegramDebugNotificationsEnabled": true
 }
