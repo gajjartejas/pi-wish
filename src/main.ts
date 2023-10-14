@@ -144,7 +144,8 @@ const main = async (): Promise<void> => {
 const awaitForRandomDelay = async (): Promise<void> => {
   if (RANDOM_DELAY_FOR_WISH) {
     const [min, max] = RANDOM_DELAY_RANGE_IN_SECONDS;
-    await sleep(randomInteger(min, max));
+    const delayInMs = randomInteger(min, max) * 1000;
+    await sleep(delayInMs);
   }
 };
 
