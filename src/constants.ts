@@ -6,8 +6,10 @@ dotenv.config();
 
 const config = JSON.parse(fs.readFileSync('config.json', 'utf-8')) as IAppConfig;
 
-export const HEADLESS = config.headless;
-export const DRY_RUN = config.dryRun;
+export const HEADLESS = config.developer.headless;
+export const DRY_RUN = config.developer.dryRun;
+export const SIMULATED_DELAY = config.developer.simulateDelay;
+export const SIMULATE_DELAY_IN_SECONDS = config.developer.simulateDelayInSeconds;
 
 export const FRIENDS_TO_EXCLUDE = config.excludeProfileIds;
 export const FRIENDS_TO_INCLUDE = config.includedProfileIds;

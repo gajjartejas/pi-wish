@@ -1,8 +1,12 @@
 {
+  "developer": {
+    "headless": false,
+    "dryRun": true,
+    "simulateDelay": false,
+    "simulateDelayInSeconds": 5000
+  },
   "excludeProfileIds": [],
   "includedProfileIds": [],
-  "headless": true,
-  "dryRun": false,
   "randomDelayForWish": false,
   "randomDelayRangeInSeconds": [0, 100],
   "customBirthdayMessages": [

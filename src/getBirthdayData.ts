@@ -1,6 +1,6 @@
 import { Page } from 'puppeteer';
 import { User } from './types.js';
-import { getIdFromUrl } from './helper.js';
+import { awaitForSimulatedDelay, getIdFromUrl, sleep } from './helper.js';
 import { FB_BIRTHDAY_URL } from './constants.js';
 
 export const getBirthdayData = async (page: Page): Promise<User[]> => {
@@ -8,7 +8,7 @@ export const getBirthdayData = async (page: Page): Promise<User[]> => {
     const results: User[] = [];
     console.log(`parseRawBirthdayData 1 -> opening ${FB_BIRTHDAY_URL}`);
     await page.goto(FB_BIRTHDAY_URL);
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    await sleep(5000);
     console.log('parseRawBirthdayData 2 -> redirected birthday url:', page.url());
 
     const sectionQuery = '#screen-root > div > div:nth-child(2) > div:nth-child(4)';
@@ -25,6 +25,8 @@ export const getBirthdayData = async (page: Page): Promise<User[]> => {
       return results;
     }
 
+    await awaitForSimulatedDelay();
+
     for (let i = 1; i < sectionHTMLCollection.length; i++) {
       const itemQuery = `${sectionQuery} > div:nth-child(${i + 1})`;
 
@@ -40,6 +42,8 @@ export const getBirthdayData = async (page: Page): Promise<User[]> => {
       console.log('parseRawBirthdayData 9 -> itemCollection clicking:', itemCollection);
       await itemCollection.click();
       console.log('parseRawBirthdayData 10 -> itemCollection clicking finished:', itemCollection);
+
+      await awaitForSimulatedDelay();
 
       const profileNameSelector = `${sectionQuery} > div:nth-child(6) > h1`;
 
@@ -64,6 +68,7 @@ export const getBirthdayData = async (page: Page): Promise<User[]> => {
         }
       }
       await page.goBack();
+      await awaitForSimulatedDelay();
       await page.waitForSelector(sectionQuery);
     }
     return results;

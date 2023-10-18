@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { Offset, Page } from 'puppeteer';
+import { SIMULATE_DELAY_IN_SECONDS, SIMULATED_DELAY } from './constants.js';
 
 export const sleep = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -36,3 +37,10 @@ export function createDirectories(): string {
   console.log('newDirPath', newDirPath);
   return newDirPath;
 }
+
+export const awaitForSimulatedDelay = async (): Promise<void> => {
+  if (!SIMULATED_DELAY) {
+    return;
+  }
+  await sleep(SIMULATE_DELAY_IN_SECONDS * 1000);
+};
