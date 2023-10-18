@@ -65,10 +65,12 @@
 
 7. Edit the `config.json` file with the following information.
 
+   - `developer.headless` - Set to false for debugging (displays browser window)
+   - `developer.dryRun` - Set `false` to enable clicking post button, true means it won't post to users timeline.
+   - `developer.simulateDelay` - Set `true` to enable delay between clicks.
+   - `developer.simulateDelayInSeconds` - delay between clicks/navigation, default is 5 seconds.
    - `excludeProfileIds` - It will not wish to provided profile ids.
    - `includedProfileIds` - It will only wish to provided profile ids.
-   - `headless` - Set to false for debugging (displays browser window)
-   - `dryRun` - Set `false` to enable clicking post button, true means it won't post to users timeline.
    - `randomDelayForWish` - Adds random delay between wish.
    - `randomDelayRangeInSeconds` - Range for `randomDelayForWish`, ex: `[0, 100]`
    - `customBirthdayMessages` - Use specified message for wish.
@@ -77,22 +79,24 @@
 
    Note: Example Ids: `["4", "5"]`, use `id` field from url - `https://m.facebook.com/profile.php/?id=4`
 
+   Default `config.json` file:
+
    ```json
    {
+     "developer": {
+       "headless": true,
+       "dryRun": false,
+       "simulateDelay": false,
+       "simulateDelayInSeconds": 5000
+     },
      "excludeProfileIds": [],
      "includedProfileIds": [],
-     "headless": true,
-     "dryRun": false,
      "randomDelayForWish": false,
      "randomDelayRangeInSeconds": [0, 100],
      "customBirthdayMessages": [
        {
-         "message": "You look younger than ever! Happy birthday!",
-         "ids": ["4", "5"]
-       },
-       {
-         "message": "Happy birthday!",
-         "ids": ["6"]
+         "message": "Happy birthday!!!",
+         "ids": [""]
        }
      ],
      "telegramNotificationsEnabled": true,

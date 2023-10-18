@@ -20,16 +20,22 @@ export type IDBData = {
 export type IAppConfig = {
   excludeProfileIds: string[];
   includedProfileIds: string[];
-  headless: boolean;
-  dryRun: boolean;
   randomDelayForWish: boolean;
   randomDelayRangeInSeconds: number[];
   customBirthdayMessages: IAppConfigCustomBirthdayMessage[];
   telegramNotificationsEnabled: boolean;
   telegramDebugNotificationsEnabled: boolean;
+  developer: IAppConfigDeveloper;
 };
 
 export type IAppConfigCustomBirthdayMessage = {
   message: string;
   ids: string[];
+};
+
+export type IAppConfigDeveloper = {
+  headless: boolean;
+  dryRun: boolean;
+  simulateDelay: boolean;
+  simulateDelayInSeconds: number;
 };

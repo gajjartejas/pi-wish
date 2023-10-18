@@ -1,5 +1,5 @@
 import { Page } from 'puppeteer';
-import { clickWithNavigate } from './helper.js';
+import { awaitForSimulatedDelay, clickWithNavigate, sleep } from './helper.js';
 import { FB_PROFILE_URL } from './constants.js';
 
 export const postBirthdayWish = async (
@@ -15,6 +15,8 @@ export const postBirthdayWish = async (
     await page.goto(url);
     console.log('postBirthdayWish 2 -> finished 1', url);
 
+    await awaitForSimulatedDelay();
+
     console.log('postBirthdayWish 3 -> navigateToPostScreen');
     const result = await navigateToPostScreen(page);
     console.log('postBirthdayWish 4 -> navigateToPostScreen Finished');
@@ -22,20 +24,18 @@ export const postBirthdayWish = async (
       return result;
     }
 
-    const writeSomethingInputButton1 =
-      '#screen-root > div > div:nth-child(2) > div:nth-child(4)';
-    console.log(
-      'postBirthdayWish 5 -> waitForSelector:',
-      writeSomethingInputButton1,
-    );
+    const writeSomethingInputButton1 = '#screen-root > div > div:nth-child(2) > div:nth-child(4)';
+    console.log('postBirthdayWish 5 -> waitForSelector:', writeSomethingInputButton1);
     await page.waitForSelector(writeSomethingInputButton1);
     console.log('postBirthdayWish 6 -> Finished 3');
 
+    await awaitForSimulatedDelay();
     await page.click(writeSomethingInputButton1);
     await page.keyboard.type(wishText);
 
     if (dryRun) {
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await sleep(5000);
+      console.log('postBirthdayWish 6 -> Finished returned');
       return true;
     }
 
@@ -50,10 +50,7 @@ export const postBirthdayWish = async (
   }
 };
 
-const submitGreetingAndNavigate = async (
-  page: Page,
-  index?: number,
-): Promise<boolean | string> => {
+const submitGreetingAndNavigate = async (page: Page, index?: number): Promise<boolean | string> => {
   let computedIndex = index !== undefined ? index : 11;
   try {
     const query = `#screen-root > div > div:nth-child(2) > div:nth-child(${computedIndex})`; //10 or 11
@@ -71,10 +68,7 @@ const submitGreetingAndNavigate = async (
   }
 };
 
-const navigateToPostScreen = async (
-  page: Page,
-  index?: number,
-): Promise<boolean | string> => {
+const navigateToPostScreen = async (page: Page, index?: number): Promise<boolean | string> => {
   let computedIndex = index !== undefined ? index : 10;
   try {
     const query = `#screen-root > div > div:nth-child(2) > div:nth-child(${computedIndex})`; //11 or 12

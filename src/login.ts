@@ -1,5 +1,5 @@
 import { Page } from 'puppeteer';
-import { clickWithNavigate } from './helper.js';
+import { awaitForSimulatedDelay, clickWithNavigate } from './helper.js';
 import { FB_LOGIN_URL } from './constants.js';
 
 export const login = async (page: Page, fbID: string, fbPass: string): Promise<boolean | string> => {
@@ -13,6 +13,8 @@ export const login = async (page: Page, fbID: string, fbPass: string): Promise<b
     console.log('login -> logging into fB - login URL opened');
     await page.type('#m_login_email', fbID);
     await page.type('#m_login_password', fbPass);
+
+    await awaitForSimulatedDelay();
 
     console.log('login -> logging into fB - entries filled');
     await clickWithNavigate('#login_password_step_element > button', page);
