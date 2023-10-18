@@ -16,5 +16,6 @@
     }
   ],
   "telegramNotificationsEnabled": true,
-  "telegramDebugNotificationsEnabled": true
+  "telegramDebugNotificationsEnabled": true,
+  "disableImageLoading": true
 }
