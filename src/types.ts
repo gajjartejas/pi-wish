@@ -25,6 +25,7 @@ export type IAppConfig = {
   customBirthdayMessages: IAppConfigCustomBirthdayMessage[];
   telegramNotificationsEnabled: boolean;
   telegramDebugNotificationsEnabled: boolean;
+  disableImageLoading: boolean;
   developer: IAppConfigDeveloper;
 };
 

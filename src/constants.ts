@@ -22,6 +22,8 @@ export const CUSTOM_BIRTHDAY_MESSAGES = config.customBirthdayMessages;
 export const TELEGRAM_NOTIFICATIONS_ENABLED = config.telegramNotificationsEnabled;
 export const TELEGRAM_DEBUG_NOTIFICATIONS_ENABLED = config.telegramDebugNotificationsEnabled;
 
+export const DISABLE_IMAGE_LOADING = config.disableImageLoading;
+
 export const API_TELEGRAM = 'https://api.telegram.org/';
 
 export const FB_PROFILE_URL = 'https://m.facebook.com/profile.php/?id=';

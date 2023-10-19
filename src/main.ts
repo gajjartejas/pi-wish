@@ -11,6 +11,7 @@ import { getRandomWish } from './getRandomWish.js';
 import {
   CHAT_ID,
   CUSTOM_BIRTHDAY_MESSAGES,
+  DISABLE_IMAGE_LOADING,
   DRY_RUN,
   FB_ID,
   FB_PASS,
@@ -220,6 +221,18 @@ const launchBrowserAndPage = async (): Promise<[Browser, Page] | null> => {
       userAgent:
         'Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1',
     });
+
+    if (DISABLE_IMAGE_LOADING) {
+      await page.setRequestInterception(true);
+      page.on('request', req => {
+        if (req.resourceType() === 'image' || req.resourceType() === 'media') {
+          req.abort();
+        } else {
+          req.continue();
+        }
+      });
+    }
+
     return [browser, page];
   } catch (e: any) {
     if (TELEGRAM_DEBUG_NOTIFICATIONS_ENABLED) {
