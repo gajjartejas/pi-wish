@@ -66,18 +66,18 @@
 7. Edit the `config.json` file with the following information.
 
    - `developer.headless` - Set to false for debugging (displays browser window)
-   - `developer.dryRun` - Set `false` to enable clicking post button, true means it won't post to users timeline.
+   - `developer.dryRun` - Set `false` to enable clicking the post button, true means it won't post to the user's timeline.
    - `developer.simulateDelay` - Set `true` to enable delay between clicks.
    - `developer.simulateDelayInSeconds` - delay between clicks/navigation, default is 5 seconds.
-   - `excludeProfileIds` - It will not wish to provided profile ids.
-   - `includedProfileIds` - It will only wish to provided profile ids.
-   - `randomDelayForWish` - Adds random delay between wish.
+   - `excludeProfileIds` - It will not wish to provide profile ids.
+   - `includedProfileIds` - It will only wish to provide profile ids.
+   - `randomDelayForWish` - Adds random delay between wishes.
    - `randomDelayRangeInSeconds` - Range for `randomDelayForWish`, ex: `[0, 100]`
-   - `customBirthdayMessages` - Use specified message for wish.
+   - `customBirthdayMessages` - Use a specified message for a wish.
    - `telegramNotificationsEnabled` - Enable disable telegram notification.
    - `telegramDebugNotificationsEnabled` - Enable debug logs on telegram notification, prints exception if any.
 
-   Note: Example Ids: `["4", "5"]`, use `id` field from url - `https://m.facebook.com/profile.php/?id=4`
+   Note: Example Ids: `["4", "5"]`, use `id` field from URL - `https://m.facebook.com/profile.php/?id=4`
 
    Default `config.json` file:
 
@@ -104,32 +104,35 @@
    }
    ```
 
-8. Build the project using below command, this will produce `dist` dir at project root folder.
+8. Build the project using the below command, this will produce `dist` dir at the project root folder.
 
    ```sh
    npm run build
    ```
 
-9. Start `pi-wish` to run at 11:00, 17:00, and 20:00 every day. Adjust the schedule
+9. Start `pi-wish` to run at 11:00, 17:00, and 20:00 every day [see below command `'0 11,17,20 * * *'`]. Adjust the schedule
    using [this tool](https://www.freeformatter.com/cron-expression-generator-quartz.html):
-   First time it will try to collect fiends birthdays and try to wish each one by one, if fails it will try again(17:00
-   and 20:00) when cron job runs for remaining friends.
+   The first time it will try to collect friends' birthdays and try to wish each one by one, if fails it will try again(17:00
+   and 20:00) when the cron job runs for remaining friends.
 
    ```sh
    pm2 start --cron-restart '0 11,17,20 * * *' --no-autorestart --name pi-wish dist/src/main.js
    ```
 
-   after you can check status using `pm2 list` as it will show process status below
+   after you can check the status using `pm2 list` as it will show the process status below
 
    | id | name    | namespace | version | mode | pid   | uptime | ↺ | status | cpu | mem    | user  | watching |
    |----|---------|-----------|---------|------|-------|--------|---|--------|-----|--------|-------|----------|
    | 0  | pi-wish | default   | 1.0.0   | fork | 22697 | 0s     | 0 | online | 0%  | 19.9mb | tejas | disabled |
 
-   you can stop process using `pm2 stop 0`.
+   you can stop the process using `pm2 stop 0`.
+
+## Updating
+Use `git pull && npm install && npm run build` to update and build updated dist.
 
 ## Todo
 
 1. Code cleanup.
 2. Better error handling.
 3. Friend/Unfriend tracker.
-4. Send birthday message if not able to post on timeline.
+4. Send a birthday message if not able to post on the timeline.
