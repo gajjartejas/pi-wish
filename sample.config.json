@@ -17,5 +17,6 @@
   ],
   "telegramNotificationsEnabled": true,
   "telegramDebugNotificationsEnabled": true,
-  "disableImageLoading": true
+  "disableImageLoading": true,
+  "enableNewReleaseCheck": true
 }

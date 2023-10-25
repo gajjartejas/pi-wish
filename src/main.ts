@@ -10,9 +10,11 @@ import { getBirthdayData } from './getBirthdayData.js';
 import { getRandomWish } from './getRandomWish.js';
 import {
   CHAT_ID,
+  CURRENT_VERSION,
   CUSTOM_BIRTHDAY_MESSAGES,
   DISABLE_IMAGE_LOADING,
   DRY_RUN,
+  ENABLE_NEW_RELEASE_CHECK,
   FB_ID,
   FB_PASS,
   FB_PROFILE_URL,
@@ -21,6 +23,8 @@ import {
   HEADLESS,
   RANDOM_DELAY_FOR_WISH,
   RANDOM_DELAY_RANGE_IN_SECONDS,
+  REPO_NAME,
+  REPO_OWNER,
   TELEGRAM_API_TOKEN,
   TELEGRAM_DEBUG_NOTIFICATIONS_ENABLED,
   TELEGRAM_NOTIFICATIONS_ENABLED,
@@ -28,8 +32,12 @@ import {
 import { createDirectories, randomInteger, sleep } from './helper.js';
 import puppeteer, { Browser, Page } from 'puppeteer';
 import { notifyOnTelegramMe } from './sendNotifications.js';
+import { checkGitHubRelease } from './checkGitHubRelease.js';
 
 const main = async (): Promise<void> => {
+  //Check for app update
+  checkForUpdate().then();
+
   let browser: Browser | null = null;
   let page: Page | null = null;
 
@@ -287,6 +295,23 @@ export const notify = async (token: string, chatId: string, message: string): Pr
     return;
   }
   await notifyOnTelegramMe(token, chatId, message);
+};
+
+const checkForUpdate = async (): Promise<void> => {
+  if (!ENABLE_NEW_RELEASE_CHECK) {
+    return;
+  }
+  const result = await checkGitHubRelease(REPO_OWNER, REPO_NAME, CURRENT_VERSION);
+  console.log('checkForUpdate->', result.message);
+  if (result.isNewVersionAvailable) {
+    console.log(`checkForUpdate-> Release Notes:\n${result.releaseNotes}`);
+    await notifyOnTelegramMe(
+      TELEGRAM_API_TOKEN!,
+      CHAT_ID!,
+      `🚀 ${result.message} 🚀\n\nRelease Note:\n${result.releaseNotes}`.replace(/([|{[\]*_~}+)(#>!=\-.])/gm, '\\$1'),
+      'MarkdownV2',
+    );
+  }
 };
 
 main().then();
