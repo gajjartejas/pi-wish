@@ -26,6 +26,7 @@ export type IAppConfig = {
   telegramNotificationsEnabled: boolean;
   telegramDebugNotificationsEnabled: boolean;
   disableImageLoading: boolean;
+  enableNewReleaseCheck: boolean;
   developer: IAppConfigDeveloper;
 };
 

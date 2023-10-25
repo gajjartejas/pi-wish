@@ -76,6 +76,8 @@
    - `customBirthdayMessages` - Use a specified message for a wish.
    - `telegramNotificationsEnabled` - Enable disable telegram notification.
    - `telegramDebugNotificationsEnabled` - Enable debug logs on telegram notification, prints exception if any.
+   - `disableImageLoading` - Disable loading images in browser.
+   - `enableNewReleaseCheck` - Enable to check new release updates on startups.
 
    Note: Example Ids: `["4", "5"]`, use `id` field from URL - `https://m.facebook.com/profile.php/?id=4`
 
@@ -100,7 +102,9 @@
        }
      ],
      "telegramNotificationsEnabled": true,
-     "telegramDebugNotificationsEnabled": true
+     "telegramDebugNotificationsEnabled": true,
+     "disableImageLoading": true,
+     "enableNewReleaseCheck": true
    }
    ```
 
@@ -128,6 +132,7 @@
    you can stop the process using `pm2 stop 0`.
 
 ## Updating
+
 Use `git pull && npm install && npm run build` to update and build updated dist.
 
 ## Todo
@@ -136,3 +141,4 @@ Use `git pull && npm install && npm run build` to update and build updated dist.
 2. Better error handling.
 3. Friend/Unfriend tracker.
 4. Send a birthday message if not able to post on the timeline.
+5. Send custom message at custom date.
