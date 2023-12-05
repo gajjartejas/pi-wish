@@ -45,10 +45,13 @@ export const getBirthdayData = async (page: Page): Promise<User[]> => {
 
       await awaitForSimulatedDelay();
 
-      const profileNameSelector = `${sectionQuery} > div:nth-child(6) > h1`;
+      const profileNameSelectors = [
+        `${sectionQuery} > div:nth-child(6) > h1`,
+        `${sectionQuery} > div.m.bg-s2 > div > div > span`,
+      ];
 
-      console.log('parseRawBirthdayData 11 -> waitForSelector:', profileNameSelector);
-      await page.waitForSelector(profileNameSelector);
+      console.log('parseRawBirthdayData 11 -> waitForSelector:', profileNameSelectors);
+      const profileNameSelector = await waitForAnySelector(page, profileNameSelectors);
       console.log('parseRawBirthdayData 12 -> waitForSelector finished:', profileNameSelector);
 
       const name = await page.$eval(profileNameSelector, v => v.textContent);
@@ -74,5 +77,22 @@ export const getBirthdayData = async (page: Page): Promise<User[]> => {
     return results;
   } catch (error: any) {
     throw new Error(error);
+  }
+};
+
+const waitForAnySelector = async (page: Page, selectors: string[]): Promise<string> => {
+  const promises = selectors.map(selector =>
+    page
+      .waitForSelector(selector, { timeout: 5000 }) // You can adjust the timeout as needed
+      .then(() => selector)
+      .catch(() => undefined),
+  );
+
+  const resolvedSelector = await Promise.race(promises);
+
+  if (resolvedSelector) {
+    return resolvedSelector;
+  } else {
+    throw new Error('None of the selectors resolved within the specified timeout.');
   }
 };
