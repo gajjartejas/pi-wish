@@ -35,6 +35,8 @@ import { notifyOnTelegramMe } from './sendNotifications.js';
 import { checkGitHubRelease } from './checkGitHubRelease.js';
 
 const main = async (): Promise<void> => {
+  console.log('====================Start=========================');
+
   //Check for app update
   checkForUpdate().then();
 
@@ -53,10 +55,11 @@ const main = async (): Promise<void> => {
     //Get database file
     const db = await initLocalDatabase('db.json');
     if (db === null) {
+      console.log('====================Exit=========================');
       process.exit(0);
     }
     const userData = db.data[todayDate] || todayConfig;
-    console.log('saved db json:', userData);
+    console.log('main->saved db json:', userData);
 
     //Check for listFetchComplete && wished all -> RETURN
     const users = userData.users.map(v => {
@@ -73,28 +76,31 @@ const main = async (): Promise<void> => {
     const isWishedToAll = users.filter(v => !v.wished && v.include && !v.exclude).length === 0;
 
     if (listFetchComplete && isWishedToAll) {
-      console.log('ListFetchComplete && Wished all!');
+      console.log('main->ListFetchComplete && Wished all!');
+      console.log('====================Exit=========================');
       process.exit(0);
     }
 
     //Launch Browser
     const launchBrowserResults = await launchBrowserAndPage();
     if (launchBrowserResults === null) {
+      console.log('====================Exit=========================');
       process.exit(0);
-      return;
     }
     [browser, page] = launchBrowserResults;
 
     //Login user
     const loginStatus = await loginUser(page);
     if (loginStatus === false) {
+      console.log('====================Exit=========================');
       process.exit(0);
     }
 
     //Check for listFetchComplete && !wished all
     if (listFetchComplete && !isWishedToAll) {
-      console.log('ListFetchComplete && but not wished all yet.');
+      console.log('main->ListFetchComplete && but not wished all yet.');
       await wishToUsers(users, db, todayDate, page);
+      console.log('====================Exit=========================');
       process.exit(0);
     }
 
@@ -133,6 +139,7 @@ const main = async (): Promise<void> => {
     await wishToUsers(todayConfig.users, db, todayDate, page);
 
     await browser.close();
+    console.log('====================Exit=========================');
     process.exit(0);
   } catch (e: any) {
     console.log('main->error:', e);
@@ -146,6 +153,7 @@ const main = async (): Promise<void> => {
     if (browser !== null) {
       await browser.close();
     }
+    console.log('====================Exit=========================');
     process.exit(0);
   }
 };
@@ -299,6 +307,7 @@ export const notify = async (token: string, chatId: string, message: string): Pr
 
 const checkForUpdate = async (): Promise<void> => {
   if (!ENABLE_NEW_RELEASE_CHECK) {
+    console.log('checkForUpdate->disabled');
     return;
   }
   const result = await checkGitHubRelease(REPO_OWNER, REPO_NAME, CURRENT_VERSION);

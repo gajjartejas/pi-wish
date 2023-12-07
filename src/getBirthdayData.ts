@@ -40,7 +40,7 @@ export const getBirthdayData = async (page: Page): Promise<User[]> => {
       }
 
       console.log('parseRawBirthdayData 9 -> itemCollection clicking:', itemCollection);
-      await itemCollection.click();
+      await Promise.all([page.waitForNavigation(), itemCollection.click()]);
       console.log('parseRawBirthdayData 10 -> itemCollection clicking finished:', itemCollection);
 
       await awaitForSimulatedDelay();
@@ -83,7 +83,7 @@ export const getBirthdayData = async (page: Page): Promise<User[]> => {
 const waitForAnySelector = async (page: Page, selectors: string[]): Promise<string> => {
   const promises = selectors.map(selector =>
     page
-      .waitForSelector(selector, { timeout: 5000 }) // You can adjust the timeout as needed
+      .waitForSelector(selector, { timeout: 30000 }) // You can adjust the timeout as needed
       .then(() => selector)
       .catch(() => undefined),
   );
